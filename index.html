@@ -13,10 +13,15 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app">
-      <aside class="sidebar">
+    <div class="app" data-sidebar="expanded">
+      <aside class="sidebar" aria-label="Note drawer">
         <header class="sidebar__header">
-          <h1>freeflow</h1>
+          <h1 class="sidebar__title">freeflow</h1>
+          <button class="icon-btn sidebar__collapse" id="sidebar-collapse" aria-label="Collapse notes">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
+              <path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+            </svg>
+          </button>
         </header>
         <div class="sidebar__controls">
           <button class="btn" id="new-note-btn">New note</button>
@@ -31,19 +36,39 @@
         </div>
         <nav class="note-list" id="note-list"></nav>
       </aside>
+      <div class="app__overlay" id="app-overlay" hidden></div>
       <main class="editor">
         <header class="editor__topbar">
           <div class="editor__meta">
-            <input
-              id="note-title"
-              type="text"
-              placeholder="Untitled note"
-              aria-label="Note title"
-            />
+            <div class="editor__meta-row">
+              <button
+                class="icon-btn sidebar-toggle"
+                id="sidebar-toggle"
+                aria-expanded="true"
+                aria-label="Toggle note drawer"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
+                  <path
+                    d="M10 6l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                  />
+                </svg>
+              </button>
+              <input
+                id="note-title"
+                type="text"
+                placeholder="Untitled note"
+                aria-label="Note title"
+              />
+            </div>
             <div class="editor__timestamp" id="note-timestamp"></div>
           </div>
           <div class="editor__actions">
-            <label class="control">
+            <label class="control control--font" for="font-size-input">
               <span>Font</span>
               <input
                 type="range"
@@ -52,9 +77,67 @@
                 max="28"
                 value="18"
               />
+              <span class="control__value" id="font-size-value">18px</span>
             </label>
-            <label class="control control--timer">
-              <span>Timer</span>
+            <button class="icon-btn" id="font-reset-btn" aria-label="Reset font size">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--reset">
+                <path
+                  d="M20 12a8 8 0 10-2.34 5.66"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M20 12V7h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </button>
+            <button class="icon-btn icon-btn--theme" id="dark-mode-toggle" aria-pressed="false" aria-label="Toggle theme">
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--sun">
+                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M12 2v2m0 16v2m10-10h-2M6 12H4m15.07 7.07l-1.41-1.41M6.34 6.34L4.93 4.93m12.73 0l-1.41 1.41M6.34 17.66l-1.41 1.41"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--moon">
+                <path
+                  d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </button>
+          </div>
+        </header>
+        <section class="editor__body">
+          <textarea
+            id="note-content"
+            placeholder="Just start typing..."
+            spellcheck="false"
+          ></textarea>
+        </section>
+        <footer class="editor__footer">
+          <div class="timer-controls">
+            <button class="btn" id="timer-toggle" aria-pressed="false">
+              Start timer
+            </button>
+            <label class="control control--timer" for="timer-minutes-input">
+              <span>Minutes</span>
               <div class="control__field">
                 <input
                   type="number"
@@ -68,34 +151,19 @@
                 <span class="control__suffix">min</span>
               </div>
             </label>
-            <button class="btn" id="dark-mode-toggle" aria-pressed="false">
-              Dark mode
-            </button>
-            <button class="btn" id="timer-toggle" aria-pressed="false">
-              Start timer
-            </button>
-          </div>
-        </header>
-        <section class="editor__body">
-          <textarea
-            id="note-content"
-            placeholder="Just start typing..."
-            spellcheck="false"
-          ></textarea>
-        </section>
-        <footer class="editor__footer">
-          <div
-            class="timer"
-            id="timer-display"
-            role="timer"
-            aria-live="polite"
-            tabindex="-1"
-          >
-            15:00
+            <div
+              class="timer"
+              id="timer-display"
+              role="timer"
+              aria-live="polite"
+              tabindex="-1"
+            >
+              15:00
+            </div>
           </div>
         </footer>
       </main>
     </div>
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
   </body>
 </html>
