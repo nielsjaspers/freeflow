@@ -1,169 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>freeflow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="app" data-sidebar="expanded">
-      <aside class="sidebar" aria-label="Note drawer">
-        <header class="sidebar__header">
-          <h1 class="sidebar__title">freeflow</h1>
-          <button class="icon-btn sidebar__collapse" id="sidebar-collapse" aria-label="Collapse notes">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
-              <path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-            </svg>
-          </button>
-        </header>
-        <div class="sidebar__controls">
-          <button class="btn" id="new-note-btn">New note</button>
-        </div>
-        <div class="sidebar__search">
-          <input
-            type="search"
-            id="search-input"
-            placeholder="Search notes"
-            autocomplete="off"
-          />
-        </div>
-        <nav class="note-list" id="note-list"></nav>
-      </aside>
-      <div class="app__overlay" id="app-overlay" hidden></div>
-      <main class="editor">
-        <header class="editor__topbar">
-          <div class="editor__meta">
-            <div class="editor__meta-row">
-              <button
-                class="icon-btn sidebar-toggle"
-                id="sidebar-toggle"
-                aria-expanded="true"
-                aria-label="Toggle note drawer"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
-                  <path
-                    d="M10 6l6 6-6 6"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.5"
-                  />
-                </svg>
-              </button>
-              <input
-                id="note-title"
-                type="text"
-                placeholder="Untitled note"
-                aria-label="Note title"
-              />
+        <aside class="sidebar" aria-label="Note drawer">
+            <header class="sidebar__header">
+                <h1 class="sidebar__title">freeflow</h1>
+                <button class="icon-btn sidebar__collapse" id="sidebar-collapse" aria-label="Collapse notes">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
+                        <path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="1.5" />
+                    </svg>
+                </button>
+            </header>
+            <div class="sidebar__controls">
+                <button class="btn" id="new-note-btn">New note</button>
             </div>
-            <div class="editor__timestamp" id="note-timestamp"></div>
-          </div>
-          <div class="editor__actions">
-            <label class="control control--font" for="font-size-input">
-              <span>Font</span>
-              <input
-                type="range"
-                id="font-size-input"
-                min="14"
-                max="28"
-                value="18"
-              />
-              <span class="control__value" id="font-size-value">18px</span>
-            </label>
-            <button class="icon-btn" id="font-reset-btn" aria-label="Reset font size">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--reset">
-                <path
-                  d="M20 12a8 8 0 10-2.34 5.66"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M20 12V7h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
-            </button>
-            <button class="icon-btn icon-btn--theme" id="dark-mode-toggle" aria-pressed="false" aria-label="Toggle theme">
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--sun">
-                <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.5" />
-                <path
-                  d="M12 2v2m0 16v2m10-10h-2M6 12H4m15.07 7.07l-1.41-1.41M6.34 6.34L4.93 4.93m12.73 0l-1.41 1.41M6.34 17.66l-1.41 1.41"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
-              <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--moon">
-                <path
-                  d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                />
-              </svg>
-            </button>
-          </div>
-        </header>
-        <section class="editor__body">
-          <textarea
-            id="note-content"
-            placeholder="Just start typing..."
-            spellcheck="false"
-          ></textarea>
-        </section>
-        <footer class="editor__footer">
-          <div class="timer-controls">
-            <button class="btn" id="timer-toggle" aria-pressed="false">
-              Start timer
-            </button>
-            <label class="control control--timer" for="timer-minutes-input">
-              <span>Minutes</span>
-              <div class="control__field">
-                <input
-                  type="number"
-                  id="timer-minutes-input"
-                  min="1"
-                  max="180"
-                  value="15"
-                  inputmode="numeric"
-                  aria-label="Timer minutes"
-                />
-                <span class="control__suffix">min</span>
-              </div>
-            </label>
-            <div
-              class="timer"
-              id="timer-display"
-              role="timer"
-              aria-live="polite"
-              tabindex="-1"
-            >
-              15:00
+            <div class="sidebar__search">
+                <input type="search" id="search-input" placeholder="Search notes" autocomplete="off" />
             </div>
-          </div>
-        </footer>
-      </main>
+            <nav class="note-list" id="note-list"></nav>
+        </aside>
+        <div class="app__overlay" id="app-overlay" hidden></div>
+        <main class="editor">
+            <header class="editor__topbar">
+                <div class="editor__meta">
+                    <div class="editor__meta-row">
+                        <button class="icon-btn sidebar-toggle" id="sidebar-toggle" aria-expanded="true"
+                            aria-label="Toggle note drawer">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--chevron">
+                                <path d="M10 6l6 6-6 6" fill="none" stroke="currentColor" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="1.5" />
+                            </svg>
+                        </button>
+                        <input id="note-title" type="text" placeholder="Untitled note" aria-label="Note title" />
+                    </div>
+                    <div class="editor__timestamp" id="note-timestamp"></div>
+                </div>
+                <div class="editor__actions">
+                    <label class="control control--font" for="font-size-input">
+                        <span>Font</span>
+                        <input type="range" id="font-size-input" min="14" max="28" value="18" />
+                        <span class="control__value" id="font-size-value">18px</span>
+                    </label>
+                    <button class="icon-btn" id="font-reset-btn" aria-label="Reset font size">
+                        <svg viewBox="0 0 21 21" aria-hidden="true" class="icon icon--reset">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <g fill="none" fill-rule="evenodd" stroke="#000000" stroke-linecap="round"
+                                    stroke-linejoin="round" transform="matrix(0 1 1 0 2.5 2.5)">
+                                    <path
+                                        d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8">
+                                    </path>
+                                    <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"></path>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+                    <button class="icon-btn icon-btn--theme" id="dark-mode-toggle" aria-pressed="false"
+                        aria-label="Toggle theme">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--sun">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V3C12.75 3.41421 12.4142 3.75 12 3.75C11.5858 3.75 11.25 3.41421 11.25 3V2C11.25 1.58579 11.5858 1.25 12 1.25ZM4.39861 4.39861C4.6915 4.10572 5.16638 4.10572 5.45927 4.39861L5.85211 4.79145C6.145 5.08434 6.145 5.55921 5.85211 5.85211C5.55921 6.145 5.08434 6.145 4.79145 5.85211L4.39861 5.45927C4.10572 5.16638 4.10572 4.6915 4.39861 4.39861ZM19.6011 4.39887C19.894 4.69176 19.894 5.16664 19.6011 5.45953L19.2083 5.85237C18.9154 6.14526 18.4405 6.14526 18.1476 5.85237C17.8547 5.55947 17.8547 5.0846 18.1476 4.79171L18.5405 4.39887C18.8334 4.10598 19.3082 4.10598 19.6011 4.39887ZM12 6.75C9.1005 6.75 6.75 9.1005 6.75 12C6.75 14.8995 9.1005 17.25 12 17.25C14.8995 17.25 17.25 14.8995 17.25 12C17.25 9.1005 14.8995 6.75 12 6.75ZM5.25 12C5.25 8.27208 8.27208 5.25 12 5.25C15.7279 5.25 18.75 8.27208 18.75 12C18.75 15.7279 15.7279 18.75 12 18.75C8.27208 18.75 5.25 15.7279 5.25 12ZM1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H3C3.41421 11.25 3.75 11.5858 3.75 12C3.75 12.4142 3.41421 12.75 3 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12ZM20.25 12C20.25 11.5858 20.5858 11.25 21 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H21C20.5858 12.75 20.25 12.4142 20.25 12ZM18.1476 18.1476C18.4405 17.8547 18.9154 17.8547 19.2083 18.1476L19.6011 18.5405C19.894 18.8334 19.894 19.3082 19.6011 19.6011C19.3082 19.894 18.8334 19.894 18.5405 19.6011L18.1476 19.2083C17.8547 18.9154 17.8547 18.4405 18.1476 18.1476ZM5.85211 18.1479C6.145 18.4408 6.145 18.9157 5.85211 19.2086L5.45927 19.6014C5.16638 19.8943 4.6915 19.8943 4.39861 19.6014C4.10572 19.3085 4.10572 18.8336 4.39861 18.5407L4.79145 18.1479C5.08434 17.855 5.55921 17.855 5.85211 18.1479ZM12 20.25C12.4142 20.25 12.75 20.5858 12.75 21V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V21C11.25 20.5858 11.5858 20.25 12 20.25Z"
+                                    fill="#1C274C"></path>
+                            </g>
+                        </svg>
+                        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--moon">
+                            <path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z" fill="none" stroke="currentColor"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+            <section class="editor__body">
+                <textarea id="note-content" placeholder="Just start typing..." spellcheck="false"></textarea>
+            </section>
+            <footer class="editor__footer">
+                <div class="timer-controls">
+                    <button class="btn" id="timer-toggle" aria-pressed="false">
+                        Start timer
+                    </button>
+                    <label class="control control--timer" for="timer-minutes-input">
+                        <div class="control__field">
+                            <input type="number" id="timer-minutes-input" min="1" max="180" value="15"
+                                inputmode="numeric" aria-label="Timer minutes" />
+                            <span class="control__suffix">min</span>
+                        </div>
+                    </label>
+                    <div class="timer" id="timer-display" role="timer" aria-live="polite" tabindex="-1">
+                        15:00
+                    </div>
+                </div>
+            </footer>
+        </main>
     </div>
     <script type="module" src="js/app.js"></script>
-  </body>
+</body>
+
 </html>
