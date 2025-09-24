@@ -19,5 +19,11 @@ export const dom = {
   sidebarHeader: document.getElementById('sidebar-header'),
   editorMetaRow: document.getElementById('editor-meta-row'),
   editorActions: document.querySelector('.editor__actions'),
+  confirmModal: document.getElementById('confirm-modal'),
+  confirmMessage: document.getElementById('confirm-message'),
+  confirmSkip: document.getElementById('confirm-skip'),
+  confirmCancel: document.getElementById('confirm-cancel'),
+  confirmDelete: document.getElementById('confirm-delete'),
+  modalBackdrop: document.getElementById('modal-backdrop'),
   appOverlay: document.getElementById('app-overlay'),
 };

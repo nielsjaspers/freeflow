@@ -53,6 +53,7 @@ export function loadPreferences() {
             : DEFAULT_TIMER_MINUTES,
         sidebarCollapsed:
           typeof parsed.sidebarCollapsed === 'boolean' ? parsed.sidebarCollapsed : null,
+        skipDeleteConfirm: typeof parsed.skipDeleteConfirm === 'boolean' ? parsed.skipDeleteConfirm : false,
       };
     }
   } catch (error) {

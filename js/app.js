@@ -10,6 +10,7 @@ import {
   loadPreferences,
   loadNotes,
   persistNotes,
+  persistPreferences,
 } from './storage.js';
 import { applyTheme, applyFontSize, resetFontSize } from './preferences.js';
 import {
@@ -38,6 +39,7 @@ import {
 
 let titleUpdateTimer = null;
 let contentUpdateTimer = null;
+let pendingDeleteId = null;
 
 const WELCOME_NOTE = {
   title: 'welcome to freeflow',
@@ -105,6 +107,16 @@ function bindEvents() {
     setSidebarCollapsed(true, { persist: !mobileMediaQuery.matches, remember: !mobileMediaQuery.matches })
   );
 
+  dom.confirmDelete?.addEventListener('click', handleConfirmDelete);
+  dom.confirmCancel?.addEventListener('click', hideDeleteConfirm);
+  dom.modalBackdrop?.addEventListener('click', hideDeleteConfirm);
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && dom.confirmModal && !dom.confirmModal.hidden) {
+      hideDeleteConfirm();
+    }
+  });
+
   const onViewportChange = () => {
     handleViewportChange();
     updateResponsivePlacements();
@@ -134,7 +146,7 @@ function handleNoteListClick(event) {
 
   if (action === 'delete') {
     event.stopPropagation();
-    deleteNote(noteId);
+    requestDelete(noteId);
     return;
   }
 
@@ -201,6 +213,55 @@ function collapseSidebarForMobile() {
     setSidebarCollapsed(true, { persist: false, remember: false });
     updateResponsivePlacements();
   }
+}
+
+function requestDelete(noteId) {
+  if (state.preferences.skipDeleteConfirm) {
+    finalizeDelete(noteId);
+    return;
+  }
+
+  pendingDeleteId = noteId;
+  if (dom.confirmModal) {
+    const note = state.notes.find((item) => item.id === noteId);
+    dom.confirmMessage.textContent = note
+      ? `Are you sure you want to delete “${note.title.trim() || 'Untitled note'}”?`
+      : 'Are you sure you want to delete this note?';
+    if (dom.confirmSkip) {
+      dom.confirmSkip.checked = false;
+    }
+    dom.confirmModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    dom.confirmDelete?.focus();
+  }
+}
+
+function hideDeleteConfirm() {
+  if (dom.confirmModal) {
+    dom.confirmModal.hidden = true;
+  }
+  pendingDeleteId = null;
+  const shouldLockBody = mobileMediaQuery.matches && !state.ui.sidebarCollapsed;
+  document.body.style.overflow = shouldLockBody ? 'hidden' : '';
+}
+
+function handleConfirmDelete() {
+  if (pendingDeleteId) {
+    const skipFurther = Boolean(dom.confirmSkip?.checked);
+    if (skipFurther) {
+      state.preferences.skipDeleteConfirm = true;
+      persistPreferences({ skipDeleteConfirm: true });
+    }
+    const id = pendingDeleteId;
+    hideDeleteConfirm();
+    finalizeDelete(id);
+  } else {
+    hideDeleteConfirm();
+  }
+}
+
+function finalizeDelete(noteId) {
+  deleteNote(noteId);
 }
 
 function handleStorageSync(event) {

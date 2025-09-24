@@ -9,6 +9,7 @@ export function applyTheme(isDark, options = {}) {
   const preferDark =
     typeof isDark === 'boolean' ? isDark : window.matchMedia('(prefers-color-scheme: dark)').matches;
   document.body.classList.toggle('theme-dark', preferDark);
+  document.documentElement.classList.toggle('theme-dark', preferDark);
   if (dom.darkModeToggle) {
     dom.darkModeToggle.setAttribute('aria-pressed', String(preferDark));
     const label = preferDark ? 'Switch to light mode' : 'Switch to dark mode';

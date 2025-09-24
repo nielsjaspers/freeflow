@@ -14,6 +14,7 @@ export const state = {
     activeNoteId: null,
     timerMinutes: DEFAULT_TIMER_MINUTES,
     sidebarCollapsed: null,
+    skipDeleteConfirm: false,
   },
   ui: {
     sidebarCollapsed: false,
