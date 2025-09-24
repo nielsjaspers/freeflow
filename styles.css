@@ -582,6 +582,10 @@ html.no-note-dots #note-content {
   color: #b73c3c;
 }
 
+.settings__section--credits {
+  border-top: 1px solid var(--border);
+}
+
 .settings__hint {
   margin: 0;
   font-size: 13px;
