@@ -44,11 +44,11 @@ let pendingDeleteId = null;
 const WELCOME_NOTE = {
   title: 'welcome to freeflow',
   content: [
-    'freeflow is a simple space for unfiltered writing.',
+    'freeflow is a simple space for unfiltered writing, with minimalistic functionality',
     '',
     'quick start:',
     '- tap the drawer icon to browse, create, or remove notes.',
-    '- write freely in the main canvas; everything saves automatically to this device.',
+    '- write freely in the main canvas; everything saves automatically to this device. your notes are yours!',
     '- adjust the font size with the slider below and reset it with the arrow button.',
     '- set a focus timer, press play, pause when you need a breather, or stop to reset.',
     '',
