@@ -122,8 +122,13 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 12px;
+  color: var(--text-muted);
 }
 
+.sidebar__settings:hover,
+.sidebar__settings:focus-visible {
+  color: var(--accent);
+}
 .sidebar__search input {
   width: 100%;
 }
