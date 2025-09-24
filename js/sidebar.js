@@ -52,10 +52,8 @@ export function updateOverlayVisibility() {
   const isCollapsed = dom.app.dataset.sidebar === 'collapsed';
   if (isMobile && !isCollapsed) {
     dom.appOverlay.hidden = false;
-    document.body.style.overflow = 'hidden';
   } else {
     dom.appOverlay.hidden = true;
-    document.body.style.overflow = '';
   }
 }
 

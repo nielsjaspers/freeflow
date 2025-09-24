@@ -1,12 +1,26 @@
+import { state } from './state.js';
+
 export function applySearch(query, notes) {
+  const includeTitle = state.preferences.searchInTitle;
+  const includeContent = state.preferences.searchInContent;
+  if (!includeTitle && !includeContent) {
+    return [...notes];
+  }
+
   const scored = [];
   for (const note of notes) {
-    const haystack = `${note.title}\n${note.content}`.toLowerCase();
-    const score = fuzzyScore(query, haystack);
+    let score = 0;
+    if (includeTitle && typeof note.title === 'string') {
+      score = Math.max(score, fuzzyScore(query, note.title.toLowerCase()));
+    }
+    if (includeContent && typeof note.content === 'string') {
+      score = Math.max(score, fuzzyScore(query, note.content.toLowerCase()));
+    }
     if (score > 0) {
       scored.push({ note, score });
     }
   }
+
   scored.sort((a, b) => {
     if (b.score === a.score) {
       return b.note.updatedAt - a.note.updatedAt;

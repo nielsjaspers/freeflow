@@ -112,8 +112,24 @@ body {
   display: flex;
 }
 
+.sidebar__controls {
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.sidebar__settings {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
 .sidebar__search input {
   width: 100%;
+}
+
+.sidebar__search[hidden] {
+  display: none !important;
 }
 
 .drawer-toggle {
@@ -162,7 +178,7 @@ body {
 .note-card:focus-visible {
   border-color: var(--accent);
   outline: none;
-  box-shadow: 0 12px 24px rgba(44, 93, 99, 0.12);
+  box-shadow: none;
 }
 
 .note-card:focus-visible {
@@ -383,14 +399,31 @@ body.theme-dark .note-card.is-active {
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+.icon--pause {
+  display: none;
+}
+
 .icon--drawer {
   width: 22px;
   height: 22px;
   fill: currentColor;
 }
 
-.icon--pause {
-  display: none;
+.icon--gear {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.icon--close {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+}
+
+.icon--close path {
+  stroke: currentColor;
 }
 
 .icon--moon {
@@ -426,8 +459,13 @@ body.theme-dark .icon--moon {
   border-radius: 16px;
   background-color: var(--note-bg);
   background-image: radial-gradient(var(--note-dot) 1.5px, transparent 1.5px);
-  background-size: 35px 35px;
+  background-size: 40px 40px;
   background-attachment: local;
+}
+
+.no-note-dots #note-content,
+html.no-note-dots #note-content {
+  background-image: none;
 }
 
 .editor__footer {
@@ -482,6 +520,84 @@ body.theme-dark .icon--moon {
 
 #font-reset-btn {
   margin-left: 8px;
+}
+
+.settings__dialog {
+  max-height: min(560px, 90vh);
+  overflow-y: auto;
+  gap: 24px;
+}
+
+.settings__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings__section h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.settings__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.settings__option input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.settings__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.settings__section--danger {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.settings__section--danger h3,
+.settings__section--danger .settings__hint {
+  color: #b73c3c;
+}
+
+.settings__hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.danger__dialog {
+  gap: 16px;
+}
+
+.danger__input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: inherit;
+}
+
+.danger__input:focus-visible {
+  outline: 2px solid rgba(183, 60, 60, 0.4);
 }
 
 #timer-toggle[data-state="playing"] .icon--play {
@@ -559,6 +675,22 @@ body.theme-dark .btn:focus-visible {
 
 body.theme-dark .btn[aria-pressed="true"] {
   background: rgba(93, 163, 166, 0.24);
+}
+
+.btn--danger {
+  border-color: rgba(183, 60, 60, 0.4);
+  color: #b73c3c;
+}
+
+body.theme-dark .btn--danger {
+  color: #ff8080;
+  border-color: rgba(255, 128, 128, 0.4);
+}
+
+.btn--danger:hover,
+.btn--danger:focus-visible {
+  background: rgba(183, 60, 60, 0.12);
+  border-color: rgba(183, 60, 60, 0.6);
 }
 
 input,

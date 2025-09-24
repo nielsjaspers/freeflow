@@ -14,10 +14,14 @@ export const state = {
     activeNoteId: null,
     timerMinutes: DEFAULT_TIMER_MINUTES,
     sidebarCollapsed: null,
+    showPolkaDots: true,
+    searchInTitle: true,
+    searchInContent: true,
     skipDeleteConfirm: false,
   },
   ui: {
     sidebarCollapsed: false,
+    settingsOpen: false,
   },
 };
 

@@ -80,7 +80,8 @@ export function deleteNote(id) {
 export function renderNoteList() {
   const list = dom.noteList;
   if (!list) return;
-  const query = state.searchQuery.trim().toLowerCase();
+  const canSearch = state.preferences.searchInTitle || state.preferences.searchInContent;
+  const query = canSearch ? state.searchQuery.trim().toLowerCase() : '';
   list.innerHTML = '';
 
   const notes = query ? applySearch(query, state.notes) : sortNotes(state.notes);
