@@ -10,6 +10,8 @@
   --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   --radius: 16px;
   --font-base: "Playfair Display", "Times New Roman", serif;
+  --note-bg: #ffffff;
+  --note-dot: rgba(44, 93, 99, 0.12);
 }
 
 body.theme-dark {
@@ -22,6 +24,8 @@ body.theme-dark {
   --accent: #5da3a6;
   --border: rgba(255, 255, 255, 0.12);
   --shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+  --note-bg: #181816;
+  --note-dot: rgba(93, 163, 166, 0.2);
 }
 
 * {
@@ -92,7 +96,7 @@ body {
 .sidebar__header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 12px;
 }
 
@@ -128,7 +132,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-right: 4px;
+  padding: 6px 4px 12px;
 }
 
 .note-list::-webkit-scrollbar {
@@ -156,8 +160,8 @@ body {
 .note-card:hover,
 .note-card:focus-visible {
   border-color: var(--accent);
-  transform: translateY(-1px);
   outline: none;
+  box-shadow: 0 12px 24px rgba(44, 93, 99, 0.12);
 }
 
 .note-card:focus-visible {
@@ -407,13 +411,21 @@ body.theme-dark .icon--moon {
   color: inherit;
   outline: none;
   height: 100%;
+  padding: 24px;
+  border-radius: 16px;
+  background-color: var(--note-bg);
+  background-image: radial-gradient(var(--note-dot) 1.5px, transparent 1.5px);
+  background-size: 35px 35px;
+  background-attachment: local;
 }
 
 .editor__footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   border-top: 1px solid var(--border);
   padding-top: 16px;
+  gap: 24px;
 }
 
 .timer-controls {
@@ -428,6 +440,22 @@ body.theme-dark .icon--moon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+}
+
+.font-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.font-controls .control--font {
+  padding: 10px 14px;
+  background: var(--surface-muted);
+}
+
+.font-controls .icon-btn {
+  color: var(--text);
 }
 
 #timer-toggle[data-state="playing"] .icon--play {
@@ -619,6 +647,20 @@ button {
   .editor {
     padding: 24px;
     height: auto;
+  }
+
+  .editor__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .font-controls {
+    justify-content: space-between;
+  }
+
+  .timer-controls {
+    justify-content: flex-start;
   }
 
   .editor__topbar {

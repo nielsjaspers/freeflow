@@ -22,7 +22,7 @@ export function setSidebarCollapsed(collapsed, options = {}) {
         dom.drawerToggle.classList.add('drawer-toggle--in-editor');
       } else {
         if (dom.drawerToggle.parentElement !== dom.sidebarHeader) {
-          dom.sidebarHeader.insertAdjacentElement('afterbegin', dom.drawerToggle);
+          dom.sidebarHeader.appendChild(dom.drawerToggle);
         }
         dom.drawerToggle.classList.remove('drawer-toggle--in-editor');
       }
