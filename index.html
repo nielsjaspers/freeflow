@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>freeflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <header class="sidebar__header">
+          <h1>freeflow</h1>
+        </header>
+        <div class="sidebar__controls">
+          <button class="btn" id="new-note-btn">New note</button>
+        </div>
+        <div class="sidebar__search">
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Search notes"
+            autocomplete="off"
+          />
+        </div>
+        <nav class="note-list" id="note-list"></nav>
+      </aside>
+      <main class="editor">
+        <header class="editor__topbar">
+          <div class="editor__meta">
+            <input
+              id="note-title"
+              type="text"
+              placeholder="Untitled note"
+              aria-label="Note title"
+            />
+            <div class="editor__timestamp" id="note-timestamp"></div>
+          </div>
+          <div class="editor__actions">
+            <label class="control">
+              <span>Font</span>
+              <input
+                type="range"
+                id="font-size-input"
+                min="14"
+                max="28"
+                value="18"
+              />
+            </label>
+            <button class="btn" id="dark-mode-toggle" aria-pressed="false">
+              Dark mode
+            </button>
+            <button class="btn" id="timer-toggle" aria-pressed="false">
+              Start timer
+            </button>
+          </div>
+        </header>
+        <section class="editor__body">
+          <textarea
+            id="note-content"
+            placeholder="Just start typing..."
+            spellcheck="false"
+          ></textarea>
+        </section>
+        <footer class="editor__footer">
+          <div class="timer" id="timer-display">00:00</div>
+        </footer>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
