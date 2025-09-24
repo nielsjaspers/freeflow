@@ -39,6 +39,7 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .app {
@@ -46,7 +47,8 @@ body {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   transition: grid-template-columns 0.2s ease;
 }
 
@@ -82,6 +84,7 @@ body {
   padding: 32px 24px;
   border-right: 1px solid var(--border);
   height: 100%;
+  min-height: 0;
   transition: transform 0.2s ease, opacity 0.2s ease, visibility 0.2s ease, padding 0.2s ease;
   overflow: hidden;
 }
@@ -89,19 +92,14 @@ body {
 .sidebar__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
 }
 
 .sidebar__title {
   font-size: 28px;
   margin: 0;
   letter-spacing: 0.04em;
-}
-
-.sidebar__collapse {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .sidebar__controls,
@@ -111,6 +109,16 @@ body {
 
 .sidebar__search input {
   width: 100%;
+}
+
+.drawer-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawer-toggle--in-editor {
+  margin-right: 0;
 }
 
 .note-list {
@@ -137,7 +145,7 @@ body {
   border-radius: 12px;
   padding: 14px 16px;
   border: 1px solid transparent;
-  transition: border 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -228,6 +236,8 @@ body.theme-dark .note-card.is-active {
   padding: 32px 48px;
   gap: 24px;
   background: var(--surface);
+  min-height: 0;
+  height: 100vh;
 }
 
 .editor__topbar {
@@ -251,12 +261,6 @@ body.theme-dark .note-card.is-active {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.sidebar-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 #note-title {
@@ -361,6 +365,10 @@ body.theme-dark .note-card.is-active {
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
+.icon--pause {
+  display: none;
+}
+
 .icon--moon {
   display: none;
 }
@@ -378,7 +386,7 @@ body.theme-dark .icon--moon {
   height: 18px;
 }
 
-.app[data-sidebar="collapsed"] .sidebar-toggle .icon--chevron {
+.app[data-sidebar="collapsed"] #drawer-toggle .icon--chevron {
   transform: rotate(180deg);
 }
 
@@ -398,6 +406,7 @@ body.theme-dark .icon--moon {
   line-height: 1.6;
   color: inherit;
   outline: none;
+  height: 100%;
 }
 
 .editor__footer {
@@ -413,6 +422,33 @@ body.theme-dark .icon--moon {
   gap: 16px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.icon-btn--timer {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+#timer-toggle[data-state="playing"] .icon--play {
+  display: none;
+}
+
+#timer-toggle[data-state="playing"] .icon--pause {
+  display: block;
+}
+
+#timer-toggle:not([data-state="playing"]) .icon--play {
+  display: block;
+}
+
+#timer-toggle:not([data-state="playing"]) .icon--pause {
+  display: none;
+}
+
+#timer-stop:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .timer {
@@ -527,9 +563,20 @@ button {
   margin: 0;
 }
 
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition: none !important;
+}
+
 @media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
+
   .app {
     grid-template-columns: minmax(0, 1fr);
+    height: auto;
   }
 
   .app__overlay {
@@ -571,6 +618,7 @@ button {
 @media (max-width: 720px) {
   .editor {
     padding: 24px;
+    height: auto;
   }
 
   .editor__topbar {
@@ -590,6 +638,7 @@ button {
 @media (max-width: 520px) {
   .editor {
     padding: 20px 18px 28px;
+    height: auto;
   }
 
   #note-title {

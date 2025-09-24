@@ -8,17 +8,25 @@ export function setSidebarCollapsed(collapsed, options = {}) {
   const isCollapsed = Boolean(collapsed);
   dom.app.dataset.sidebar = isCollapsed ? 'collapsed' : 'expanded';
 
-  if (dom.sidebarToggle) {
+  if (dom.drawerToggle) {
     const toggleLabel = isCollapsed ? 'Show note drawer' : 'Hide note drawer';
-    dom.sidebarToggle.setAttribute('aria-expanded', String(!isCollapsed));
-    dom.sidebarToggle.setAttribute('aria-label', toggleLabel);
-    dom.sidebarToggle.setAttribute('title', toggleLabel);
-  }
+    dom.drawerToggle.setAttribute('aria-expanded', String(!isCollapsed));
+    dom.drawerToggle.setAttribute('aria-label', toggleLabel);
+    dom.drawerToggle.setAttribute('title', toggleLabel);
 
-  if (dom.sidebarCollapse) {
-    const collapseLabel = isCollapsed ? 'Expand notes' : 'Collapse notes';
-    dom.sidebarCollapse.setAttribute('aria-label', collapseLabel);
-    dom.sidebarCollapse.setAttribute('title', collapseLabel);
+    if (dom.sidebarHeader && dom.editorMetaRow) {
+      if (isCollapsed) {
+        if (dom.drawerToggle.parentElement !== dom.editorMetaRow) {
+          dom.editorMetaRow.insertAdjacentElement('afterbegin', dom.drawerToggle);
+        }
+        dom.drawerToggle.classList.add('drawer-toggle--in-editor');
+      } else {
+        if (dom.drawerToggle.parentElement !== dom.sidebarHeader) {
+          dom.sidebarHeader.insertAdjacentElement('afterbegin', dom.drawerToggle);
+        }
+        dom.drawerToggle.classList.remove('drawer-toggle--in-editor');
+      }
+    }
   }
 
   if (dom.sidebar) {
@@ -53,4 +61,5 @@ export function updateOverlayVisibility() {
 
 export function handleViewportChange() {
   updateOverlayVisibility();
+  setSidebarCollapsed(state.ui.sidebarCollapsed, { persist: false, remember: false });
 }

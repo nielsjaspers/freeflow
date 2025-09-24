@@ -18,14 +18,11 @@ export function setTimerMinutes(minutes, options = {}) {
   timerState.durationMs = clamped * 60000;
   if (!timerState.isRunning) {
     timerState.remainingMs = timerState.durationMs;
+    timerState.targetTimestamp = null;
+    timerState.isActive = false;
     updateTimerDisplay(timerState.remainingMs);
-    if (dom.timerDisplay) {
-      dom.timerDisplay.classList.remove('is-complete');
-    }
-    if (dom.timerToggle) {
-      dom.timerToggle.textContent = 'Start timer';
-      dom.timerToggle.setAttribute('aria-pressed', 'false');
-    }
+    dom.timerDisplay?.classList.remove('is-complete');
+    updateTimerControls();
   }
 
   if (dom.timerMinutesInput) {
@@ -41,10 +38,19 @@ export function setTimerMinutes(minutes, options = {}) {
 
 export function onTimerToggle() {
   if (timerState.isRunning) {
-    stopTimer();
+    pauseTimer();
+  } else {
+    resumeTimer();
+  }
+}
+
+export function onTimerStop() {
+  if (!timerState.isRunning && !timerState.isActive) {
+    resetTimerState();
+    updateTimerControls();
     return;
   }
-  startTimer();
+  stopTimer();
 }
 
 export function onTimerMinutesInput(event) {
@@ -62,66 +68,57 @@ export function onTimerMinutesChange(event) {
   setTimerMinutes(event.target.value, { persist: true });
 }
 
-export function stopTimer(options = {}) {
+function resumeTimer() {
+  timerState.remainingMs = Math.max(0, timerState.remainingMs || timerState.durationMs);
+  timerState.targetTimestamp = Date.now() + timerState.remainingMs;
+  timerState.intervalId = window.setInterval(tickTimer, TIMER_TICK_MS);
+  timerState.isRunning = true;
+  timerState.isActive = true;
+  dom.timerDisplay?.classList.remove('is-complete');
+  updateTimerControls();
+}
+
+function pauseTimer() {
+  if (!timerState.isRunning) return;
+  if (timerState.intervalId) {
+    window.clearInterval(timerState.intervalId);
+    timerState.intervalId = null;
+  }
+  timerState.remainingMs = Math.max(0, timerState.targetTimestamp - Date.now());
+  timerState.targetTimestamp = null;
+  timerState.isRunning = false;
+  timerState.isActive = true;
+  updateTimerControls();
+}
+
+function stopTimer(options = {}) {
   const { completed = false } = options;
   if (timerState.intervalId) {
     window.clearInterval(timerState.intervalId);
     timerState.intervalId = null;
   }
   timerState.isRunning = false;
-  if (dom.timerToggle) {
-    dom.timerToggle.setAttribute('aria-pressed', 'false');
-    dom.timerToggle.textContent = 'Start timer';
-  }
-  if (dom.timerMinutesInput) {
-    dom.timerMinutesInput.disabled = false;
-  }
-  if (dom.timerDisplay) {
-    dom.timerDisplay.classList.remove('is-active');
-  }
+  timerState.targetTimestamp = null;
 
   if (completed) {
     timerState.remainingMs = 0;
+    timerState.isActive = false;
     updateTimerDisplay(timerState.remainingMs);
-    if (dom.timerDisplay) {
-      dom.timerDisplay.classList.add('is-complete');
-    }
+    dom.timerDisplay?.classList.add('is-complete');
   } else {
-    resetTimer();
+    resetTimerState();
   }
+
+  updateTimerControls();
 }
 
-function startTimer() {
-  if (timerState.isRunning) return;
-  const minutes = Number(dom.timerMinutesInput?.value) || state.preferences.timerMinutes || DEFAULT_TIMER_MINUTES;
-  setTimerMinutes(minutes, { persist: true });
+function resetTimerState() {
   timerState.remainingMs = timerState.durationMs;
-  timerState.targetTimestamp = Date.now() + timerState.remainingMs;
-  timerState.intervalId = window.setInterval(tickTimer, TIMER_TICK_MS);
-  timerState.isRunning = true;
-  if (dom.timerToggle) {
-    dom.timerToggle.textContent = 'Stop timer';
-    dom.timerToggle.setAttribute('aria-pressed', 'true');
-  }
-  if (dom.timerMinutesInput) {
-    dom.timerMinutesInput.disabled = true;
-  }
-  if (dom.timerDisplay) {
-    dom.timerDisplay.classList.add('is-active');
-    dom.timerDisplay.classList.remove('is-complete');
-  }
-}
-
-function resetTimer() {
-  timerState.remainingMs = timerState.durationMs;
+  timerState.targetTimestamp = null;
+  timerState.isRunning = false;
+  timerState.isActive = false;
   updateTimerDisplay(timerState.remainingMs);
-  if (dom.timerDisplay) {
-    dom.timerDisplay.classList.remove('is-complete');
-  }
-  if (dom.timerToggle) {
-    dom.timerToggle.textContent = 'Start timer';
-    dom.timerToggle.setAttribute('aria-pressed', 'false');
-  }
+  dom.timerDisplay?.classList.remove('is-complete');
 }
 
 function tickTimer() {
@@ -153,4 +150,30 @@ function updateTimerDisplay(ms) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = Math.max(0, totalSeconds % 60);
   dom.timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function updateTimerControls() {
+  const stateName = timerState.isRunning ? 'running' : timerState.isActive ? 'paused' : 'idle';
+
+  if (dom.timerToggle) {
+    const label = stateName === 'running' ? 'Pause timer' : stateName === 'paused' ? 'Resume timer' : 'Start timer';
+    dom.timerToggle.dataset.state = timerState.isRunning ? 'playing' : 'paused';
+    dom.timerToggle.setAttribute('aria-pressed', timerState.isRunning ? 'true' : 'false');
+    dom.timerToggle.setAttribute('aria-label', label);
+  }
+
+  if (dom.timerMinutesInput) {
+    dom.timerMinutesInput.disabled = timerState.isRunning;
+  }
+
+  if (dom.timerStop) {
+    dom.timerStop.disabled = stateName === 'idle';
+  }
+
+  if (dom.timerDisplay) {
+    dom.timerDisplay.classList.toggle('is-active', timerState.isRunning);
+    if (!timerState.isRunning) {
+      dom.timerDisplay.classList.remove('is-active');
+    }
+  }
 }

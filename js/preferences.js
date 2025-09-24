@@ -4,6 +4,7 @@ import { dom } from './dom.js';
 import { persistPreferences } from './storage.js';
 
 export function applyTheme(isDark, options = {}) {
+  disableTransitionsTemporarily();
   const { persist = true } = options;
   const preferDark =
     typeof isDark === 'boolean' ? isDark : window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -42,4 +43,14 @@ export function applyFontSize(size, options = {}) {
 
 export function resetFontSize() {
   applyFontSize(DEFAULT_FONT_SIZE);
+}
+
+function disableTransitionsTemporarily() {
+  const root = document.documentElement;
+  if (!root.classList.contains('no-transitions')) {
+    root.classList.add('no-transitions');
+    window.requestAnimationFrame(() => {
+      root.classList.remove('no-transitions');
+    });
+  }
 }

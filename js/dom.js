@@ -14,7 +14,9 @@ export const dom = {
   timerMinutesInput: document.getElementById('timer-minutes-input'),
   darkModeToggle: document.getElementById('dark-mode-toggle'),
   timerToggle: document.getElementById('timer-toggle'),
-  sidebarToggle: document.getElementById('sidebar-toggle'),
-  sidebarCollapse: document.getElementById('sidebar-collapse'),
+  timerStop: document.getElementById('timer-stop'),
+  drawerToggle: document.getElementById('drawer-toggle'),
+  sidebarHeader: document.getElementById('sidebar-header'),
+  editorMetaRow: document.getElementById('editor-meta-row'),
   appOverlay: document.getElementById('app-overlay'),
 };

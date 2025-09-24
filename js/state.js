@@ -26,6 +26,7 @@ export const timerState = {
   targetTimestamp: null,
   intervalId: null,
   isRunning: false,
+  isActive: false,
 };
 
 export const mobileMediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);

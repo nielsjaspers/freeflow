@@ -17,6 +17,7 @@ import {
   onTimerToggle,
   onTimerMinutesInput,
   onTimerMinutesChange,
+  onTimerStop,
 } from './timer.js';
 import {
   setSidebarCollapsed,
@@ -80,11 +81,11 @@ function bindEvents() {
   dom.timerMinutesInput?.addEventListener('input', onTimerMinutesInput);
   dom.timerMinutesInput?.addEventListener('change', onTimerMinutesChange);
   dom.timerToggle?.addEventListener('click', onTimerToggle);
-  dom.sidebarToggle?.addEventListener('click', () =>
-    setSidebarCollapsed(!state.ui.sidebarCollapsed)
+  dom.timerStop?.addEventListener('click', onTimerStop);
+  dom.drawerToggle?.addEventListener('click', handleDrawerToggle);
+  dom.appOverlay?.addEventListener('click', () =>
+    setSidebarCollapsed(true, { persist: !mobileMediaQuery.matches, remember: !mobileMediaQuery.matches })
   );
-  dom.sidebarCollapse?.addEventListener('click', () => setSidebarCollapsed(true));
-  dom.appOverlay?.addEventListener('click', () => setSidebarCollapsed(true));
 
   if (typeof mobileMediaQuery.addEventListener === 'function') {
     mobileMediaQuery.addEventListener('change', handleViewportChange);
@@ -97,9 +98,7 @@ function bindEvents() {
 
 function handleCreateNote() {
   createNote();
-  if (mobileMediaQuery.matches) {
-    setSidebarCollapsed(true, { persist: false, remember: false });
-  }
+  collapseSidebarForMobile();
 }
 
 function handleNoteListClick(event) {
@@ -119,9 +118,7 @@ function handleNoteListClick(event) {
   changeActiveNote(noteId);
   renderNoteList();
   renderActiveNote();
-  if (mobileMediaQuery.matches) {
-    setSidebarCollapsed(true, { persist: false, remember: false });
-  }
+  collapseSidebarForMobile();
 }
 
 function handleNoteListKeydown(event) {
@@ -135,9 +132,7 @@ function handleNoteListKeydown(event) {
   changeActiveNote(noteId);
   renderNoteList();
   renderActiveNote();
-  if (mobileMediaQuery.matches) {
-    setSidebarCollapsed(true, { persist: false, remember: false });
-  }
+  collapseSidebarForMobile();
 }
 
 function handleTitleInput(event) {
@@ -167,6 +162,20 @@ function handleSearchInput(event) {
 function handleDarkModeToggle() {
   const next = !document.body.classList.contains('theme-dark');
   applyTheme(next);
+}
+
+function handleDrawerToggle() {
+  const rememberPreference = !mobileMediaQuery.matches;
+  setSidebarCollapsed(!state.ui.sidebarCollapsed, {
+    persist: rememberPreference,
+    remember: rememberPreference,
+  });
+}
+
+function collapseSidebarForMobile() {
+  if (mobileMediaQuery.matches) {
+    setSidebarCollapsed(true, { persist: false, remember: false });
+  }
 }
 
 function handleStorageSync(event) {
