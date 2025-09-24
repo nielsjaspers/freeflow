@@ -260,6 +260,43 @@ body.theme-dark .note-card.is-active {
   background: var(--accent);
 }
 
+.control__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
+}
+
+.control__suffix {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.control--timer input[type="number"] {
+  width: 48px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  text-align: right;
+  color: inherit;
+  outline: none;
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.control--timer input[type="number"]:disabled {
+  color: var(--text-muted);
+}
+
+.control--timer input[type="number"]::-webkit-outer-spin-button,
+.control--timer input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .editor__body {
   flex: 1;
   display: flex;
@@ -290,6 +327,24 @@ body.theme-dark .note-card.is-active {
   color: var(--text-muted);
 }
 
+.timer.is-active {
+  color: var(--accent);
+}
+
+.timer.is-complete {
+  color: #b25656;
+  font-weight: 600;
+}
+
+body.theme-dark .timer.is-complete {
+  color: #ff8f8f;
+}
+
+.timer:focus-visible {
+  outline: 2px solid rgba(44, 93, 99, 0.4);
+  outline-offset: 4px;
+}
+
 .btn {
   border: 1px solid var(--border);
   background: transparent;
@@ -311,6 +366,15 @@ body.theme-dark .note-card.is-active {
 body.theme-dark .btn:hover,
 body.theme-dark .btn:focus-visible {
   background: rgba(93, 163, 166, 0.18);
+}
+
+.btn[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: rgba(44, 93, 99, 0.18);
+}
+
+body.theme-dark .btn[aria-pressed="true"] {
+  background: rgba(93, 163, 166, 0.24);
 }
 
 input,

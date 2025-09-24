@@ -1,6 +1,10 @@
 const STORAGE_KEY = 'freeflow.notes';
 const PREFERENCES_KEY = 'freeflow.preferences';
 const DEFAULT_FONT_SIZE = 18;
+const DEFAULT_TIMER_MINUTES = 15;
+const MIN_TIMER_MINUTES = 1;
+const MAX_TIMER_MINUTES = 180;
+const TIMER_TICK_MS = 250;
 
 const noteListEl = document.getElementById('note-list');
 const noteTitleEl = document.getElementById('note-title');
@@ -10,6 +14,7 @@ const timerDisplayEl = document.getElementById('timer-display');
 const searchInputEl = document.getElementById('search-input');
 const newNoteBtn = document.getElementById('new-note-btn');
 const fontSizeInput = document.getElementById('font-size-input');
+const timerMinutesInput = document.getElementById('timer-minutes-input');
 const darkModeToggle = document.getElementById('dark-mode-toggle');
 const timerToggle = document.getElementById('timer-toggle');
 
@@ -21,7 +26,16 @@ const state = {
     darkMode: null,
     fontSize: DEFAULT_FONT_SIZE,
     activeNoteId: null,
+    timerMinutes: DEFAULT_TIMER_MINUTES,
   },
+};
+
+const timerState = {
+  durationMs: DEFAULT_TIMER_MINUTES * 60000,
+  remainingMs: DEFAULT_TIMER_MINUTES * 60000,
+  targetTimestamp: null,
+  intervalId: null,
+  isRunning: false,
 };
 
 // ---------- Storage helpers ----------
@@ -63,6 +77,10 @@ function loadPreferences() {
             ? parsed.fontSize
             : DEFAULT_FONT_SIZE,
         activeNoteId: typeof parsed.activeNoteId === 'string' ? parsed.activeNoteId : null,
+        timerMinutes:
+          typeof parsed.timerMinutes === 'number'
+            ? clamp(Math.round(parsed.timerMinutes), MIN_TIMER_MINUTES, MAX_TIMER_MINUTES)
+            : DEFAULT_TIMER_MINUTES,
       };
     }
   } catch (error) {
@@ -81,8 +99,9 @@ function persistPreferences(partial) {
 // ---------- Initialization ----------
 function init() {
   loadPreferences();
-  applyTheme(state.preferences.darkMode);
-  applyFontSize(state.preferences.fontSize || DEFAULT_FONT_SIZE);
+  applyTheme(state.preferences.darkMode, { persist: false });
+  applyFontSize(state.preferences.fontSize || DEFAULT_FONT_SIZE, { persist: false });
+  setTimerMinutes(state.preferences.timerMinutes || DEFAULT_TIMER_MINUTES, { persist: false });
 
   state.notes = loadNotes();
 
@@ -104,6 +123,11 @@ function init() {
   noteTitleEl.addEventListener('input', handleTitleInput);
   noteContentEl.addEventListener('input', handleContentInput);
   searchInputEl.addEventListener('input', handleSearchInput);
+  fontSizeInput.addEventListener('input', handleFontSizeInput);
+  darkModeToggle.addEventListener('click', handleDarkModeToggle);
+  timerMinutesInput.addEventListener('input', handleTimerMinutesInput);
+  timerMinutesInput.addEventListener('change', handleTimerMinutesChange);
+  timerToggle.addEventListener('click', handleTimerToggle);
 
   window.addEventListener('storage', handleStorageSync);
 }
@@ -177,6 +201,37 @@ function handleSearchInput(event) {
   renderNoteList();
 }
 
+function handleFontSizeInput(event) {
+  applyFontSize(event.target.value);
+}
+
+function handleDarkModeToggle() {
+  const next = !document.body.classList.contains('theme-dark');
+  applyTheme(next);
+}
+
+function handleTimerMinutesInput(event) {
+  if (timerState.isRunning) return;
+  setTimerMinutes(event.target.value, { persist: false });
+}
+
+function handleTimerMinutesChange(event) {
+  if (timerState.isRunning) {
+    timerMinutesInput.value = Math.round(timerState.durationMs / 60000);
+    return;
+  }
+  setTimerMinutes(event.target.value, { persist: true });
+}
+
+function handleTimerToggle() {
+  if (timerState.isRunning) {
+    stopTimer();
+    return;
+  }
+
+  startTimer();
+}
+
 function handleStorageSync(event) {
   if (event.key === STORAGE_KEY) {
     state.notes = loadNotes();
@@ -185,20 +240,22 @@ function handleStorageSync(event) {
   }
   if (event.key === PREFERENCES_KEY) {
     loadPreferences();
-    applyTheme(state.preferences.darkMode);
-    applyFontSize(state.preferences.fontSize || DEFAULT_FONT_SIZE);
+    applyTheme(state.preferences.darkMode, { persist: false });
+    applyFontSize(state.preferences.fontSize || DEFAULT_FONT_SIZE, { persist: false });
+    if (!timerState.isRunning) {
+      setTimerMinutes(state.preferences.timerMinutes || DEFAULT_TIMER_MINUTES, { persist: false });
+    }
   }
 }
 
 // ---------- State mutations ----------
 function buildNewNote() {
-  const note = {
+  return {
     id: generateId(),
     title: '',
     content: '',
     updatedAt: Date.now(),
   };
-  return note;
 }
 
 function generateId() {
@@ -322,19 +379,129 @@ function renderActiveNote() {
   timestampEl.textContent = formatFullTimestamp(note.updatedAt);
 }
 
-function applyTheme(isDark) {
+function applyTheme(isDark, options = {}) {
+  const { persist = true } = options;
   const preferDark =
     typeof isDark === 'boolean' ? isDark : window.matchMedia('(prefers-color-scheme: dark)').matches;
   document.body.classList.toggle('theme-dark', preferDark);
-  persistPreferences({ darkMode: preferDark });
   darkModeToggle.setAttribute('aria-pressed', String(preferDark));
+  darkModeToggle.textContent = preferDark ? 'Light mode' : 'Dark mode';
+  if (persist) {
+    persistPreferences({ darkMode: preferDark });
+  } else {
+    state.preferences.darkMode = preferDark;
+  }
 }
 
-function applyFontSize(size) {
+function applyFontSize(size, options = {}) {
+  const { persist = true } = options;
   const clamped = Math.min(28, Math.max(14, Number(size) || DEFAULT_FONT_SIZE));
   noteContentEl.style.fontSize = `${clamped}px`;
   fontSizeInput.value = clamped;
-  persistPreferences({ fontSize: clamped });
+  if (persist) {
+    persistPreferences({ fontSize: clamped });
+  } else {
+    state.preferences.fontSize = clamped;
+  }
+}
+
+function setTimerMinutes(minutes, options = {}) {
+  const { persist = true } = options;
+  const numeric = Number(minutes);
+  const valid = Number.isFinite(numeric) ? Math.round(numeric) : DEFAULT_TIMER_MINUTES;
+  const clamped = clamp(valid, MIN_TIMER_MINUTES, MAX_TIMER_MINUTES);
+
+  timerState.durationMs = clamped * 60000;
+  if (!timerState.isRunning) {
+    timerState.remainingMs = timerState.durationMs;
+    updateTimerDisplay(timerState.remainingMs);
+    timerDisplayEl.classList.remove('is-complete');
+    timerToggle.textContent = 'Start timer';
+    timerToggle.setAttribute('aria-pressed', 'false');
+  }
+
+  timerMinutesInput.value = clamped;
+
+  if (persist) {
+    persistPreferences({ timerMinutes: clamped });
+  } else {
+    state.preferences.timerMinutes = clamped;
+  }
+}
+
+function startTimer() {
+  if (timerState.isRunning) return;
+  const minutes = Number(timerMinutesInput.value) || state.preferences.timerMinutes || DEFAULT_TIMER_MINUTES;
+  setTimerMinutes(minutes, { persist: true });
+  timerState.remainingMs = timerState.durationMs;
+  timerState.targetTimestamp = Date.now() + timerState.remainingMs;
+  timerState.intervalId = window.setInterval(tickTimer, TIMER_TICK_MS);
+  timerState.isRunning = true;
+  timerToggle.textContent = 'Stop timer';
+  timerToggle.setAttribute('aria-pressed', 'true');
+  timerMinutesInput.disabled = true;
+  timerDisplayEl.classList.add('is-active');
+  timerDisplayEl.classList.remove('is-complete');
+}
+
+function stopTimer(options = {}) {
+  const { completed = false } = options;
+  if (timerState.intervalId) {
+    window.clearInterval(timerState.intervalId);
+    timerState.intervalId = null;
+  }
+  timerState.isRunning = false;
+  timerToggle.setAttribute('aria-pressed', 'false');
+  timerMinutesInput.disabled = false;
+  timerDisplayEl.classList.remove('is-active');
+
+  if (completed) {
+    timerState.remainingMs = 0;
+    updateTimerDisplay(timerState.remainingMs);
+    timerDisplayEl.classList.add('is-complete');
+    timerToggle.textContent = 'Start timer';
+  } else {
+    timerDisplayEl.classList.remove('is-complete');
+    resetTimer();
+  }
+}
+
+function resetTimer() {
+  timerState.remainingMs = timerState.durationMs;
+  updateTimerDisplay(timerState.remainingMs);
+  timerDisplayEl.classList.remove('is-complete');
+  timerToggle.textContent = 'Start timer';
+  timerToggle.setAttribute('aria-pressed', 'false');
+}
+
+function tickTimer() {
+  const remaining = Math.max(0, timerState.targetTimestamp - Date.now());
+  timerState.remainingMs = remaining;
+  updateTimerDisplay(remaining);
+  if (remaining <= 0) {
+    completeTimer();
+  }
+}
+
+function completeTimer() {
+  stopTimer({ completed: true });
+  announceTimerComplete();
+}
+
+function announceTimerComplete() {
+  if (typeof timerDisplayEl.focus === 'function') {
+    timerDisplayEl.focus();
+  }
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    navigator.vibrate(200);
+  }
+}
+
+function updateTimerDisplay(ms) {
+  const totalSeconds = Math.round(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.max(0, totalSeconds % 60);
+  timerDisplayEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 // ---------- Search helpers ----------
@@ -420,11 +587,16 @@ function formatFullTimestamp(timestamp) {
   })}`;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 // ---------- Kick things off ----------
 window.addEventListener('DOMContentLoaded', init);
 
-// Expose controls that will be wired in the next iteration
+// Expose utilities for manual tweaking if needed
 window.freeflow = {
   applyTheme,
   applyFontSize,
+  setTimerMinutes,
 };
