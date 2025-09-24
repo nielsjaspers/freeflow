@@ -9,12 +9,13 @@ import {
   formatFullTimestamp,
 } from './utils.js';
 
-export function buildNewNote() {
+export function buildNewNote(initial = {}) {
+  const now = Date.now();
   return {
-    id: generateId(),
-    title: '',
-    content: '',
-    updatedAt: Date.now(),
+    id: initial.id || generateId(),
+    title: typeof initial.title === 'string' ? initial.title : '',
+    content: typeof initial.content === 'string' ? initial.content : '',
+    updatedAt: typeof initial.updatedAt === 'number' ? initial.updatedAt : now,
   };
 }
 

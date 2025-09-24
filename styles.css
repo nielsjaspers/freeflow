@@ -267,6 +267,12 @@ body.theme-dark .note-card.is-active {
   gap: 12px;
 }
 
+.editor__meta-row--stacked {
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
 #note-title {
   border: none;
   background: transparent;
@@ -306,10 +312,16 @@ body.theme-dark .note-card.is-active {
   border-radius: 999px;
   background: var(--surface-muted);
   color: inherit;
+  flex: 1 1 260px;
 }
 
 .control--font span:first-child {
   color: var(--text-muted);
+}
+
+.control--timer span:first-child {
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .control input[type="range"] {
@@ -334,6 +346,7 @@ body.theme-dark .note-card.is-active {
   font-weight: 500;
   min-width: 44px;
   text-align: right;
+  margin-left: 12px;
 }
 
 .icon-btn {
@@ -442,6 +455,11 @@ body.theme-dark .icon--moon {
   border-radius: 50%;
 }
 
+.icon-btn--timer .icon {
+  width: 22px;
+  height: 22px;
+}
+
 .font-controls {
   display: flex;
   align-items: center;
@@ -456,6 +474,16 @@ body.theme-dark .icon--moon {
 
 .font-controls .icon-btn {
   color: var(--text);
+}
+
+.font-controls .control--font input[type='range'] {
+  flex: 1 1 auto;
+  width: 220px;
+  max-width: 100%;
+}
+
+#font-reset-btn {
+  margin-left: 8px;
 }
 
 #timer-toggle[data-state="playing"] .icon--play {
@@ -647,6 +675,16 @@ button {
   .editor {
     padding: 24px;
     height: auto;
+    min-height: 100vh;
+  }
+
+  .editor__meta-row.editor__meta-row--stacked {
+    width: 100%;
+    gap: 16px;
+  }
+
+  .editor__meta-row.editor__meta-row--stacked #note-title {
+    flex: 1 1 auto;
   }
 
   .editor__footer {
@@ -656,23 +694,39 @@ button {
   }
 
   .font-controls {
+    width: 100%;
+    flex-wrap: nowrap;
     justify-content: space-between;
+  }
+
+  .font-controls .control--font {
+    flex: 1 1 auto;
+    justify-content: space-between;
+  }
+
+  .font-controls .control--font input[type='range'] {
+    width: 100%;
   }
 
   .timer-controls {
     justify-content: flex-start;
+  }
+
+  #font-reset-btn {
+    margin-left: 16px;
+  }
+
+  #note-content {
+    min-height: 55vh;
   }
 
   .editor__topbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 20px;
   }
 
   .editor__actions {
-    justify-content: flex-start;
-  }
-
-  .timer-controls {
     justify-content: flex-start;
   }
 }
@@ -685,11 +739,6 @@ button {
 
   #note-title {
     font-size: 24px;
-  }
-
-  .control--font {
-    width: 100%;
-    justify-content: space-between;
   }
 
   .editor__actions {

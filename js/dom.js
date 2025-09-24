@@ -18,5 +18,6 @@ export const dom = {
   drawerToggle: document.getElementById('drawer-toggle'),
   sidebarHeader: document.getElementById('sidebar-header'),
   editorMetaRow: document.getElementById('editor-meta-row'),
+  editorActions: document.querySelector('.editor__actions'),
   appOverlay: document.getElementById('app-overlay'),
 };

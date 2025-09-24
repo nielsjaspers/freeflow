@@ -39,6 +39,21 @@ import {
 let titleUpdateTimer = null;
 let contentUpdateTimer = null;
 
+const WELCOME_NOTE = {
+  title: 'welcome to freeflow',
+  content: [
+    'freeflow is a simple space for unfiltered writing.',
+    '',
+    'quick start:',
+    '- tap the drawer icon to browse, create, or remove notes.',
+    '- write freely in the main canvas; everything saves automatically to this device.',
+    '- adjust the font size with the slider below and reset it with the arrow button.',
+    '- set a focus timer, press play, pause when you need a breather, or stop to reset.',
+    '',
+    'no accounts, no syncing. just type and enjoy the flow!'
+  ].join('\n'),
+};
+
 function init() {
   loadPreferences();
   applyTheme(state.preferences.darkMode, { persist: false });
@@ -53,18 +68,21 @@ function init() {
 
   state.notes = loadNotes();
   if (!state.notes.length) {
-    const freshNote = buildNewNote();
-    state.notes.push(freshNote);
+    const welcomeNote = buildNewNote(WELCOME_NOTE);
+    state.notes.push(welcomeNote);
+    state.activeNoteId = welcomeNote.id;
+    persistNotes();
+  } else {
+    const preferredId = state.preferences.activeNoteId;
+    const hasPreferred = preferredId && state.notes.some((note) => note.id === preferredId);
+    state.activeNoteId = hasPreferred ? preferredId : state.notes[0].id;
   }
-
-  const preferredId = state.preferences.activeNoteId;
-  const hasPreferred = preferredId && state.notes.some((note) => note.id === preferredId);
-  state.activeNoteId = hasPreferred ? preferredId : state.notes[0].id;
 
   renderNoteList();
   renderActiveNote();
 
   bindEvents();
+  updateResponsivePlacements();
   updateOverlayVisibility();
 }
 
@@ -87,10 +105,15 @@ function bindEvents() {
     setSidebarCollapsed(true, { persist: !mobileMediaQuery.matches, remember: !mobileMediaQuery.matches })
   );
 
+  const onViewportChange = () => {
+    handleViewportChange();
+    updateResponsivePlacements();
+  };
+
   if (typeof mobileMediaQuery.addEventListener === 'function') {
-    mobileMediaQuery.addEventListener('change', handleViewportChange);
+    mobileMediaQuery.addEventListener('change', onViewportChange);
   } else {
-    mobileMediaQuery.addListener(handleViewportChange);
+    mobileMediaQuery.addListener(onViewportChange);
   }
 
   window.addEventListener('storage', handleStorageSync);
@@ -170,11 +193,13 @@ function handleDrawerToggle() {
     persist: rememberPreference,
     remember: rememberPreference,
   });
+  updateResponsivePlacements();
 }
 
 function collapseSidebarForMobile() {
   if (mobileMediaQuery.matches) {
     setSidebarCollapsed(true, { persist: false, remember: false });
+    updateResponsivePlacements();
   }
 }
 
@@ -194,6 +219,25 @@ function handleStorageSync(event) {
       typeof collapsePref === 'boolean' ? collapsePref : mobileMediaQuery.matches;
     const remember = typeof collapsePref === 'boolean';
     setSidebarCollapsed(collapseValue, { persist: false, remember });
+    updateResponsivePlacements();
+  }
+}
+
+function updateResponsivePlacements() {
+  const isMobile = mobileMediaQuery.matches;
+
+  if (dom.darkModeToggle && dom.editorMetaRow && dom.editorActions) {
+    if (isMobile) {
+      if (dom.darkModeToggle.parentElement !== dom.editorMetaRow) {
+        dom.editorMetaRow.appendChild(dom.darkModeToggle);
+      }
+      dom.editorMetaRow.classList.add('editor__meta-row--stacked');
+    } else {
+      if (dom.darkModeToggle.parentElement !== dom.editorActions) {
+        dom.editorActions.appendChild(dom.darkModeToggle);
+      }
+      dom.editorMetaRow.classList.remove('editor__meta-row--stacked');
+    }
   }
 }
 
