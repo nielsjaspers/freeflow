@@ -72,29 +72,32 @@
                     </label>
                     <button class="icon-btn" id="font-reset-btn" aria-label="Reset font size">
                         <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--reset">
-                            <path d="M12 5a7 7 0 1 0 6.55 9.52" fill="none" stroke="currentColor" stroke-width="1.6"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M18.5 5H13.2" fill="none" stroke="currentColor" stroke-width="1.6"
-                                stroke-linecap="round" stroke-linejoin="round" />
+                            <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"
+                                stroke-linejoin="round" stroke-width="1.6" transform="matrix(0 1 1 0 3 3)">
+                                <path
+                                    d="m3.98652376 1.07807068c-2.38377179 1.38514556-3.98652376 3.96636605-3.98652376 6.92192932 0 4.418278 3.581722 8 8 8s8-3.581722 8-8-3.581722-8-8-8">
+                                </path>
+                                <path d="m4 1v4h-4" transform="matrix(1 0 0 -1 0 6)"></path>
+                            </g>
                         </svg>
                     </button>
                 </div>
                 <div class="timer-controls">
                     <button class="icon-btn icon-btn--timer" id="timer-toggle" aria-pressed="false"
                         aria-label="Start timer">
-                        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--play">
-                            <path d="M9 7.5v9l7-4.5z" fill="none" stroke="currentColor" stroke-width="1.8"
+                        <svg viewBox="0 0 26 26" aria-hidden="true" class="icon icon--play">
+                            <path d="M10 7.5v11l8-5.5z" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linejoin="round" stroke-linecap="round" />
                         </svg>
-                        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--pause">
-                            <rect x="8.5" y="7" width="3.5" height="10" rx="1.4" fill="currentColor" />
-                            <rect x="12.9" y="7" width="3.5" height="10" rx="1.4" fill="currentColor" />
+                        <svg viewBox="0 0 26 26" aria-hidden="true" class="icon icon--pause">
+                            <rect x="9.2" y="7" width="4" height="12" rx="1.6" fill="currentColor" />
+                            <rect x="13.8" y="7" width="4" height="12" rx="1.6" fill="currentColor" />
                         </svg>
                     </button>
                     <button class="icon-btn icon-btn--timer" id="timer-stop" aria-label="Stop timer">
-                        <svg viewBox="0 0 24 24" aria-hidden="true" class="icon icon--stop">
-                            <rect x="8.5" y="8.5" width="7" height="7" rx="1.8" fill="none" stroke="currentColor"
-                                stroke-width="1.8" stroke-linejoin="round" />
+                        <svg viewBox="0 0 26 26" aria-hidden="true" class="icon icon--stop">
+                            <rect x="9" y="9" width="8" height="8" rx="2" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linejoin="round" />
                         </svg>
                     </button>
                     <label class="control control--timer" for="timer-minutes-input">
